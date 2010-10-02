@@ -153,7 +153,7 @@ class EmailYak_Client extends Zend_Rest_Client
 	public function post($path, $params)
 	{
 		$response = $this->restPost($this->_assemblePath($path), json_encode($params));
-		
+
 		if($response->getStatus() != 200){
 			$this->_badResponse($response);
 		}
@@ -163,7 +163,6 @@ class EmailYak_Client extends Zend_Rest_Client
 	
 	protected function _badResponse($response)
 	{
-		
 		$message = 'Unknown status code.';
 		$code = $response->getStatus();
 		if(isset($this->_errors[$code])){
@@ -175,15 +174,12 @@ class EmailYak_Client extends Zend_Rest_Client
 	}
 	
 	//only way to set the content-type since _prepareRest is final and clears the http client's parameters
-    protected function _performPost($method, $data = null)
-    {
-        $client = self::getHttpClient();
-        if (is_string($data)) {
-            $client->setRawData($data, 'application/json');
-        } elseif (is_array($data) || is_object($data)) {
-            $client->setParameterPost((array) $data);
-        }
-        return $client->request($method);
+	protected function _performPost($method, $data = null)
+	{
+		if (is_string($data)) {
+			self::getHttpClient()->setHeaders('Content-Type', 'application/json');
+		}
+		return parent::_performPost($method, $data);
     }
 	
 	protected function _assemblePath($path)
